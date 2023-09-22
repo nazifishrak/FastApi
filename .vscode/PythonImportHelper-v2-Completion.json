@@ -1,0 +1,138 @@
+[
+    {
+        "label": "randrange",
+        "importPath": "random",
+        "description": "random",
+        "isExtraImport": true,
+        "detail": "random",
+        "documentation": {}
+    },
+    {
+        "label": "Optional",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "FastAPI",
+        "importPath": "fastapi",
+        "description": "fastapi",
+        "isExtraImport": true,
+        "detail": "fastapi",
+        "documentation": {}
+    },
+    {
+        "label": "Response",
+        "importPath": "fastapi",
+        "description": "fastapi",
+        "isExtraImport": true,
+        "detail": "fastapi",
+        "documentation": {}
+    },
+    {
+        "label": "status",
+        "importPath": "fastapi",
+        "description": "fastapi",
+        "isExtraImport": true,
+        "detail": "fastapi",
+        "documentation": {}
+    },
+    {
+        "label": "HTTPException",
+        "importPath": "fastapi",
+        "description": "fastapi",
+        "isExtraImport": true,
+        "detail": "fastapi",
+        "documentation": {}
+    },
+    {
+        "label": "Body",
+        "importPath": "fastapi",
+        "description": "fastapi",
+        "isExtraImport": true,
+        "detail": "fastapi",
+        "documentation": {}
+    },
+    {
+        "label": "BaseModel",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "Post",
+        "kind": 6,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "class Post(BaseModel):\n    title: str\n    content: str\n    published: bool = True\n    rating: Optional[int]= None\nmy_posts = [{\"title\": \"Title1\", \"content\": \"Content1\", \"id\":1}, {\"title\": \"Title2\", \"content\": \"Content2\", \"id\":2}]\ndef find_post(id: str):\n    for post in my_posts:\n        if post['id']==int(id):\n            return post",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "find_post",
+        "kind": 2,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "def find_post(id: str):\n    for post in my_posts:\n        if post['id']==int(id):\n            return post\n@app.get(\"/\")\nasync def root():\n    return {\"message\": \"Hello world\"}\n#If we go to the http://127.0.0.1:8000/posts we will see the json output\n@app.get(\"/posts\")\ndef get_posts():",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "get_posts",
+        "kind": 2,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "def get_posts():\n    # Fast api will auto serialize my_posts into JSON\n    return {\"data\": my_posts}\n@app.post(\"/post\",status_code=status.HTTP_201_CREATED)  \ndef create_posts(new_post: Post):\n    post_dict = new_post.model_dump()\n    post_dict['id']= randrange(0,1000000)\n    my_posts.append(post_dict)\n    print(my_posts)\n    # new_post.dict() -> returns the post as a dict",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "create_posts",
+        "kind": 2,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "def create_posts(new_post: Post):\n    post_dict = new_post.model_dump()\n    post_dict['id']= randrange(0,1000000)\n    my_posts.append(post_dict)\n    print(my_posts)\n    # new_post.dict() -> returns the post as a dict\n    return {\"data\": post_dict}\n@app.get(\"/posts/latest\")\ndef get_latest_post():\n    post = my_posts[len(my_posts)-1]",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "get_latest_post",
+        "kind": 2,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "def get_latest_post():\n    post = my_posts[len(my_posts)-1]\n    return {\"detail\": post}\n@app.get(\"/posts/{id}\")\ndef get_post(id, response: Response):\n    post = find_post(id)\n    if not post:\n        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f\"post with id: {id} was not found\")\n    return {\"post_detail\": post}",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "get_post",
+        "kind": 2,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "def get_post(id, response: Response):\n    post = find_post(id)\n    if not post:\n        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f\"post with id: {id} was not found\")\n    return {\"post_detail\": post}",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "app",
+        "kind": 5,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "app = FastAPI()\nclass Post(BaseModel):\n    title: str\n    content: str\n    published: bool = True\n    rating: Optional[int]= None\nmy_posts = [{\"title\": \"Title1\", \"content\": \"Content1\", \"id\":1}, {\"title\": \"Title2\", \"content\": \"Content2\", \"id\":2}]\ndef find_post(id: str):\n    for post in my_posts:\n        if post['id']==int(id):",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "my_posts",
+        "kind": 5,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "my_posts = [{\"title\": \"Title1\", \"content\": \"Content1\", \"id\":1}, {\"title\": \"Title2\", \"content\": \"Content2\", \"id\":2}]\ndef find_post(id: str):\n    for post in my_posts:\n        if post['id']==int(id):\n            return post\n@app.get(\"/\")\nasync def root():\n    return {\"message\": \"Hello world\"}\n#If we go to the http://127.0.0.1:8000/posts we will see the json output\n@app.get(\"/posts\")",
+        "detail": "main",
+        "documentation": {}
+    }
+]

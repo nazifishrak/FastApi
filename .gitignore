@@ -1,0 +1,12 @@
+# Ignore Python virtual environment folders
+venv/
+__pycache__/
+
+# Ignore text editor files
+.vscode/
+.idea/
+*.pyc
+*.pyo
+*.egg-info/
+*.egg/
+.DS_Store

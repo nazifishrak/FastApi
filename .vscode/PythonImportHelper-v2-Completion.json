@@ -1,5 +1,13 @@
 [
     {
+        "label": "HTTP",
+        "importPath": "email.policy",
+        "description": "email.policy",
+        "isExtraImport": true,
+        "detail": "email.policy",
+        "documentation": {}
+    },
+    {
         "label": "randrange",
         "importPath": "random",
         "description": "random",
@@ -77,7 +85,16 @@
         "kind": 2,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "def find_post(id: str):\n    for post in my_posts:\n        if post['id']==int(id):\n            return post\n@app.get(\"/\")\nasync def root():\n    return {\"message\": \"Hello world\"}\n#If we go to the http://127.0.0.1:8000/posts we will see the json output\n@app.get(\"/posts\")\ndef get_posts():",
+        "peekOfCode": "def find_post(id: str):\n    for post in my_posts:\n        if post['id']==int(id):\n            return post\ndef find_post_index(id: int)->int:\n    \"\"\"\n    Returns the index of the post with given index\"\"\"\n    for i in range(len(my_posts)):\n        if my_posts[i]['id']==id:\n            return i",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "find_post_index",
+        "kind": 2,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "def find_post_index(id: int)->int:\n    \"\"\"\n    Returns the index of the post with given index\"\"\"\n    for i in range(len(my_posts)):\n        if my_posts[i]['id']==id:\n            return i\n@app.get(\"/\")\nasync def root():\n    return {\"message\": \"Hello world\"}\n#If we go to the http://127.0.0.1:8000/posts we will see the json output",
         "detail": "main",
         "documentation": {}
     },
@@ -104,7 +121,7 @@
         "kind": 2,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "def get_latest_post():\n    post = my_posts[len(my_posts)-1]\n    return {\"detail\": post}\n@app.get(\"/posts/{id}\")\ndef get_post(id, response: Response):\n    post = find_post(id)\n    if not post:\n        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f\"post with id: {id} was not found\")\n    return {\"post_detail\": post}",
+        "peekOfCode": "def get_latest_post():\n    post = my_posts[len(my_posts)-1]\n    return {\"detail\": post}\n@app.get(\"/posts/{id}\")\ndef get_post(id, response: Response):\n    post = find_post(id)\n    if not post:\n        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f\"post with id: {id} was not found\")\n    return {\"post_detail\": post}\n@app.delete(\"/posts/{id}\", status_code=status.HTTP_204_NO_CONTENT)",
         "detail": "main",
         "documentation": {}
     },
@@ -113,7 +130,16 @@
         "kind": 2,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "def get_post(id, response: Response):\n    post = find_post(id)\n    if not post:\n        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f\"post with id: {id} was not found\")\n    return {\"post_detail\": post}",
+        "peekOfCode": "def get_post(id, response: Response):\n    post = find_post(id)\n    if not post:\n        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f\"post with id: {id} was not found\")\n    return {\"post_detail\": post}\n@app.delete(\"/posts/{id}\", status_code=status.HTTP_204_NO_CONTENT)\ndef delete_post(id: int):\n    \"\"\"delete the post\"\"\"\n    #find the index of the post in the array with the required ID\n    index= find_post_index(id)",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "delete_post",
+        "kind": 2,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "def delete_post(id: int):\n    \"\"\"delete the post\"\"\"\n    #find the index of the post in the array with the required ID\n    index= find_post_index(id)\n    my_posts.pop(index)\n    print(my_posts)\n    return {\"message\": f\"post with id:{id} is successfully deleted\"}",
         "detail": "main",
         "documentation": {}
     },
@@ -131,7 +157,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "my_posts = [{\"title\": \"Title1\", \"content\": \"Content1\", \"id\":1}, {\"title\": \"Title2\", \"content\": \"Content2\", \"id\":2}]\ndef find_post(id: str):\n    for post in my_posts:\n        if post['id']==int(id):\n            return post\n@app.get(\"/\")\nasync def root():\n    return {\"message\": \"Hello world\"}\n#If we go to the http://127.0.0.1:8000/posts we will see the json output\n@app.get(\"/posts\")",
+        "peekOfCode": "my_posts = [{\"title\": \"Title1\", \"content\": \"Content1\", \"id\":1}, {\"title\": \"Title2\", \"content\": \"Content2\", \"id\":2}]\ndef find_post(id: str):\n    for post in my_posts:\n        if post['id']==int(id):\n            return post\ndef find_post_index(id: int)->int:\n    \"\"\"\n    Returns the index of the post with given index\"\"\"\n    for i in range(len(my_posts)):\n        if my_posts[i]['id']==id:",
         "detail": "main",
         "documentation": {}
     }

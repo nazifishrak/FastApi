@@ -1,4 +1,5 @@
 # This imports fastAPI library
+from email.policy import HTTP
 from random import randrange
 from typing import Optional
 from fastapi import FastAPI, Response, status, HTTPException
@@ -18,6 +19,13 @@ def find_post(id: str):
     for post in my_posts:
         if post['id']==int(id):
             return post
+        
+def find_post_index(id: int)->int:
+    """
+    Returns the index of the post with given index"""
+    for i in range(len(my_posts)):
+        if my_posts[i]['id']==id:
+            return i
         
 
 
@@ -54,3 +62,13 @@ def get_post(id, response: Response):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"post with id: {id} was not found")
 
     return {"post_detail": post}
+
+@app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_post(id: int):
+    """delete the post"""
+    #find the index of the post in the array with the required ID
+    index= find_post_index(id)
+    my_posts.pop(index)
+    print(my_posts)
+    return {"message": f"post with id:{id} is successfully deleted"}
+

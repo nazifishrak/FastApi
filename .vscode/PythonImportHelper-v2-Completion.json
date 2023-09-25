@@ -139,7 +139,7 @@
         "kind": 2,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "def delete_post(id: int):\n    \"\"\"delete the post\"\"\"\n    #find the index of the post in the array with the required ID\n    index= find_post_index(id)\n    my_posts.pop(index)\n    print(my_posts)\n    return {\"message\": f\"post with id:{id} is successfully deleted\"}",
+        "peekOfCode": "def delete_post(id: int):\n    \"\"\"delete the post\"\"\"\n    #find the index of the post in the array with the required ID\n    index= find_post_index(id)\n    if index==None:\n        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f\"post with id{id} does not exist\")\n    my_posts.pop(index)\n    print(my_posts)\n    return Response(status_code=status.HTTP_204_NO_CONTENT)",
         "detail": "main",
         "documentation": {}
     },

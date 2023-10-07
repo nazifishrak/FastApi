@@ -164,7 +164,7 @@
         "kind": 2,
         "importPath": "app.main",
         "description": "app.main",
-        "peekOfCode": "def get_latest_post():\n    post = my_posts[len(my_posts)-1]\n    return {\"detail\": post}\n@app.get(\"/posts/{id}\")\ndef get_post(id, response: Response):\n    post = find_post(id)\n    if not post:\n        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f\"post with id: {id} was not found\")\n    return {\"post_detail\": post}\n@app.delete(\"/posts/{id}\", status_code=status.HTTP_204_NO_CONTENT)",
+        "peekOfCode": "def get_latest_post():\n    post = my_posts[len(my_posts)-1]\n    return {\"detail\": post}\n@app.get(\"/posts/{id}\")\ndef get_post(id:int, response: Response):\n    cursor.execute(\"\"\"SELECT * FROM posts where id = %s\"\"\",(str(id)))\n    post=cursor.fetchone()\n    conn.commit()\n    return {\"post_detail\": post}\n@app.delete(\"/posts/{id}\", status_code=status.HTTP_204_NO_CONTENT)",
         "detail": "app.main",
         "documentation": {}
     },
@@ -173,7 +173,7 @@
         "kind": 2,
         "importPath": "app.main",
         "description": "app.main",
-        "peekOfCode": "def get_post(id, response: Response):\n    post = find_post(id)\n    if not post:\n        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f\"post with id: {id} was not found\")\n    return {\"post_detail\": post}\n@app.delete(\"/posts/{id}\", status_code=status.HTTP_204_NO_CONTENT)\ndef delete_post(id: int):\n    \"\"\"delete the post\"\"\"\n    #find the index of the post in the array with the required ID\n    index= find_post_index(id)",
+        "peekOfCode": "def get_post(id:int, response: Response):\n    cursor.execute(\"\"\"SELECT * FROM posts where id = %s\"\"\",(str(id)))\n    post=cursor.fetchone()\n    conn.commit()\n    return {\"post_detail\": post}\n@app.delete(\"/posts/{id}\", status_code=status.HTTP_204_NO_CONTENT)\ndef delete_post(id: int):\n    \"\"\"delete the post\"\"\"\n    #find the index of the post in the array with the required ID\n    index= find_post_index(id)",
         "detail": "app.main",
         "documentation": {}
     },

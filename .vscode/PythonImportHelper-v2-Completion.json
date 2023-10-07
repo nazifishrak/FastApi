@@ -1,5 +1,61 @@
 [
     {
+        "label": "create_engine",
+        "importPath": "sqlalchemy",
+        "description": "sqlalchemy",
+        "isExtraImport": true,
+        "detail": "sqlalchemy",
+        "documentation": {}
+    },
+    {
+        "label": "Boolean",
+        "importPath": "sqlalchemy",
+        "description": "sqlalchemy",
+        "isExtraImport": true,
+        "detail": "sqlalchemy",
+        "documentation": {}
+    },
+    {
+        "label": "Column",
+        "importPath": "sqlalchemy",
+        "description": "sqlalchemy",
+        "isExtraImport": true,
+        "detail": "sqlalchemy",
+        "documentation": {}
+    },
+    {
+        "label": "Integer",
+        "importPath": "sqlalchemy",
+        "description": "sqlalchemy",
+        "isExtraImport": true,
+        "detail": "sqlalchemy",
+        "documentation": {}
+    },
+    {
+        "label": "String",
+        "importPath": "sqlalchemy",
+        "description": "sqlalchemy",
+        "isExtraImport": true,
+        "detail": "sqlalchemy",
+        "documentation": {}
+    },
+    {
+        "label": "declarative_base",
+        "importPath": "sqlalchemy.ext.declarative",
+        "description": "sqlalchemy.ext.declarative",
+        "isExtraImport": true,
+        "detail": "sqlalchemy.ext.declarative",
+        "documentation": {}
+    },
+    {
+        "label": "sessionmaker",
+        "importPath": "sqlalchemy.orm",
+        "description": "sqlalchemy.orm",
+        "isExtraImport": true,
+        "detail": "sqlalchemy.orm",
+        "documentation": {}
+    },
+    {
         "label": "HTTP",
         "importPath": "email.policy",
         "description": "email.policy",
@@ -115,11 +171,80 @@
         "documentation": {}
     },
     {
+        "label": "models",
+        "importPath": "app",
+        "description": "app",
+        "isExtraImport": true,
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "SessionLocal",
+        "importPath": "app.database",
+        "description": "app.database",
+        "isExtraImport": true,
+        "detail": "app.database",
+        "documentation": {}
+    },
+    {
+        "label": "engine",
+        "importPath": "app.database",
+        "description": "app.database",
+        "isExtraImport": true,
+        "detail": "app.database",
+        "documentation": {}
+    },
+    {
+        "label": "SQLALCHEMY_DATABASE_URL",
+        "kind": 5,
+        "importPath": "app.database",
+        "description": "app.database",
+        "peekOfCode": "SQLALCHEMY_DATABASE_URL = 'postgresql://postgres:password@localhost/postgres'\n# The 'create_engine' function initializes a connection to the database.\n# The engine serves as the source of connectivity to our database.\nengine = create_engine(SQLALCHEMY_DATABASE_URL)\n# To interact with the database, rather than using the engine directly,\n# we use a 'Session'. The 'sessionmaker' function creates a factory for sessions.\n# 'autocommit' being False means data won't be saved unless we explicitly call commit.\n# 'autoflush' being False means SQLAlchemy won't automatically flush (i.e., write/sync) changes to the database unless explicitly asked.\nSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)\n# The 'declarative_base' function creates a base class for our models.",
+        "detail": "app.database",
+        "documentation": {}
+    },
+    {
+        "label": "engine",
+        "kind": 5,
+        "importPath": "app.database",
+        "description": "app.database",
+        "peekOfCode": "engine = create_engine(SQLALCHEMY_DATABASE_URL)\n# To interact with the database, rather than using the engine directly,\n# we use a 'Session'. The 'sessionmaker' function creates a factory for sessions.\n# 'autocommit' being False means data won't be saved unless we explicitly call commit.\n# 'autoflush' being False means SQLAlchemy won't automatically flush (i.e., write/sync) changes to the database unless explicitly asked.\nSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)\n# The 'declarative_base' function creates a base class for our models.\n# This base class will contain metadata about our tables and columns and provide the ability to generate SQL queries.\n# All the ORM classes/models we define will inherit from this base class, ensuring they are mapped to the right tables.\nBase = declarative_base()",
+        "detail": "app.database",
+        "documentation": {}
+    },
+    {
+        "label": "SessionLocal",
+        "kind": 5,
+        "importPath": "app.database",
+        "description": "app.database",
+        "peekOfCode": "SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)\n# The 'declarative_base' function creates a base class for our models.\n# This base class will contain metadata about our tables and columns and provide the ability to generate SQL queries.\n# All the ORM classes/models we define will inherit from this base class, ensuring they are mapped to the right tables.\nBase = declarative_base()",
+        "detail": "app.database",
+        "documentation": {}
+    },
+    {
+        "label": "Base",
+        "kind": 5,
+        "importPath": "app.database",
+        "description": "app.database",
+        "peekOfCode": "Base = declarative_base()",
+        "detail": "app.database",
+        "documentation": {}
+    },
+    {
         "label": "Post",
         "kind": 6,
         "importPath": "app.main",
         "description": "app.main",
         "peekOfCode": "class Post(BaseModel):\n    title: str\n    content: str\n    published: bool = True\n    rating: Optional[int]= None\n# with psycopg.connect(host=\"localhost\",dbname=\"postgres\", user=\"postgres\", password=\"password\") as conn:\n#     with conn.cursor(row_factory=psycopg.AsyncCursor) as curr:\n#         print(\"Database connection was successful\")\nwhile True:\n    try:",
+        "detail": "app.main",
+        "documentation": {}
+    },
+    {
+        "label": "get_db",
+        "kind": 2,
+        "importPath": "app.main",
+        "description": "app.main",
+        "peekOfCode": "def get_db():\n    db = SessionLocal()\n    try:\n        yield db\n    finally:\n        db.close()\nclass Post(BaseModel):\n    title: str\n    content: str\n    published: bool = True",
         "detail": "app.main",
         "documentation": {}
     },
@@ -173,7 +298,7 @@
         "kind": 2,
         "importPath": "app.main",
         "description": "app.main",
-        "peekOfCode": "def get_post(id:int, response: Response):\n    cursor.execute(\"\"\"SELECT * FROM posts where id = %s\"\"\",(str(id)))\n    post=cursor.fetchone()\n    conn.commit()\n    return {\"post_detail\": post}\n@app.delete(\"/posts/{id}\", status_code=status.HTTP_204_NO_CONTENT)\ndef delete_post(id: int):\n    \"\"\"delete the post\"\"\"\n    #find the index of the post in the array with the required ID\n    index= find_post_index(id)",
+        "peekOfCode": "def get_post(id:int, response: Response):\n    cursor.execute(\"\"\"SELECT * FROM posts where id = %s\"\"\",(str(id)))\n    post=cursor.fetchone()\n    conn.commit()\n    return {\"post_detail\": post}\n@app.delete(\"/posts/{id}\", status_code=status.HTTP_204_NO_CONTENT)\ndef delete_post(id: int):\n    \"\"\"delete the post\"\"\"\n    #find the index of the post in the array with the required ID\n    cursor.execute(\"\"\"DELETE FROM posts WHERE id = %s returning *\"\"\", (str(id)))",
         "detail": "app.main",
         "documentation": {}
     },
@@ -182,7 +307,7 @@
         "kind": 2,
         "importPath": "app.main",
         "description": "app.main",
-        "peekOfCode": "def delete_post(id: int):\n    \"\"\"delete the post\"\"\"\n    #find the index of the post in the array with the required ID\n    index= find_post_index(id)\n    if index==None:\n        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f\"post with id{id} does not exist\")\n    my_posts.pop(index)\n    print(my_posts)\n    return Response(status_code=status.HTTP_204_NO_CONTENT)\n@app.put(\"/posts/{id}\")",
+        "peekOfCode": "def delete_post(id: int):\n    \"\"\"delete the post\"\"\"\n    #find the index of the post in the array with the required ID\n    cursor.execute(\"\"\"DELETE FROM posts WHERE id = %s returning *\"\"\", (str(id)))\n    deleted_post=cursor.fetchone()\n    conn.commit()\n    if deleted_post ==None:\n        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f\"post with id {id} does not exist\")\n    return Response(status_code= status.HTTP_204_NO_CONTENT)\n@app.put(\"/posts/{id}\")",
         "detail": "app.main",
         "documentation": {}
     },
@@ -191,7 +316,7 @@
         "kind": 2,
         "importPath": "app.main",
         "description": "app.main",
-        "peekOfCode": "def update_post(id: int, post: Post):\n    index= find_post_index(id)\n    if index==None:\n        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f\"post with id{id} does not exist\")\n    post_dict = post.model_dump()\n    post_dict['id'] = id\n    my_posts[index]=post_dict\n    return {'data': post_dict}",
+        "peekOfCode": "def update_post(id: int, post: Post):\n    cursor.execute(\"\"\"UPDATE posts SET title = %s, content =  %s, published = %s WHERE id = %s RETURNING *\"\"\", (post.title, post.content, post.published, (str(id))))\n    updated_post=cursor.fetchone()\n    if updated_post==None:\n        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f\"post with id{id} does not exist\")\n    conn.commit()\n    return {'data': updated_post}",
         "detail": "app.main",
         "documentation": {}
     },
@@ -200,7 +325,7 @@
         "kind": 5,
         "importPath": "app.main",
         "description": "app.main",
-        "peekOfCode": "app = FastAPI()\nclass Post(BaseModel):\n    title: str\n    content: str\n    published: bool = True\n    rating: Optional[int]= None\n# with psycopg.connect(host=\"localhost\",dbname=\"postgres\", user=\"postgres\", password=\"password\") as conn:\n#     with conn.cursor(row_factory=psycopg.AsyncCursor) as curr:\n#         print(\"Database connection was successful\")\nwhile True:",
+        "peekOfCode": "app = FastAPI()\nmodels.Base.metadata.create_all(bind= engine)\n# Dependency\ndef get_db():\n    db = SessionLocal()\n    try:\n        yield db\n    finally:\n        db.close()\nclass Post(BaseModel):",
         "detail": "app.main",
         "documentation": {}
     },
@@ -211,6 +336,15 @@
         "description": "app.main",
         "peekOfCode": "my_posts = [{\"title\": \"Title1\", \"content\": \"Content1\", \"id\":1}, {\"title\": \"Title2\", \"content\": \"Content2\", \"id\":2}]\ndef find_post(id: str):\n    for post in my_posts:\n        if post['id']==int(id):\n            return post\ndef find_post_index(id: int)->int:\n    \"\"\"\n    Returns the index of the post with given index\"\"\"\n    for i in range(len(my_posts)):\n        if my_posts[i]['id']==id:",
         "detail": "app.main",
+        "documentation": {}
+    },
+    {
+        "label": "Post",
+        "kind": 6,
+        "importPath": "app.models",
+        "description": "app.models",
+        "peekOfCode": "class Post(Base):\n    #what do we wanna call this table in postgres? We have a class name called Post that only python knows but we can specify a specific name in postgres\n    __tablename__ = \"posts\"\n    #to create a column we have to import Column from SQLAlchemy\n    id = Column(Integer, primary_key=True, nullable=False)\n    title = Column(String, nullable=False)\n    content = Column(String, nullable=False)\n    published = Column(Boolean, default=True)\n#Now we will create the models in our mainfile",
+        "detail": "app.models",
         "documentation": {}
     }
 ]

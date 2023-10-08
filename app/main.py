@@ -3,27 +3,21 @@ from email.policy import HTTP
 from random import randrange
 import time
 from typing import Optional, Tuple
-from fastapi import FastAPI, Response, status, HTTPException
+from fastapi import FastAPI, Response, status, HTTPException, Depends
 from fastapi import Body
 from pydantic import BaseModel
 import psycopg2
 from psycopg2.extras import RealDictCursor
-import psycopg
+from sqlalchemy.orm import Session
 
 from app import models
-from app.database import SessionLocal, engine
+from app.database import SessionLocal, engine, get_db
 
 app = FastAPI()
 
 models.Base.metadata.create_all(bind= engine)
 
-# Dependency
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+
 
 
 
@@ -66,9 +60,13 @@ def find_post_index(id: int)->int:
         
 
 
+@app.get('/sql')
+async def test_orm(db: Session = Depends(get_db)):
+    return {"status": "success"}
+
 @app.get("/")
 async def root():
-    return {"message": "Hello world"}
+    return {"message": "Hello world"} 
 
 #If we go to the http://127.0.0.1:8000/posts we will see the json output
 @app.get("/posts")

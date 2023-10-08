@@ -22,3 +22,12 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 # This base class will contain metadata about our tables and columns and provide the ability to generate SQL queries.
 # All the ORM classes/models we define will inherit from this base class, ensuring they are mapped to the right tables.
 Base = declarative_base()
+
+
+# Dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

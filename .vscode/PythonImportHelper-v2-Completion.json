@@ -56,6 +56,14 @@
         "documentation": {}
     },
     {
+        "label": "Session",
+        "importPath": "sqlalchemy.orm",
+        "description": "sqlalchemy.orm",
+        "isExtraImport": true,
+        "detail": "sqlalchemy.orm",
+        "documentation": {}
+    },
+    {
         "label": "HTTP",
         "importPath": "email.policy",
         "description": "email.policy",
@@ -129,6 +137,14 @@
         "documentation": {}
     },
     {
+        "label": "Depends",
+        "importPath": "fastapi",
+        "description": "fastapi",
+        "isExtraImport": true,
+        "detail": "fastapi",
+        "documentation": {}
+    },
+    {
         "label": "Body",
         "importPath": "fastapi",
         "description": "fastapi",
@@ -162,15 +178,6 @@
         "documentation": {}
     },
     {
-        "label": "psycopg",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "psycopg",
-        "description": "psycopg",
-        "detail": "psycopg",
-        "documentation": {}
-    },
-    {
         "label": "models",
         "importPath": "app",
         "description": "app",
@@ -191,6 +198,23 @@
         "importPath": "app.database",
         "description": "app.database",
         "isExtraImport": true,
+        "detail": "app.database",
+        "documentation": {}
+    },
+    {
+        "label": "get_db",
+        "importPath": "app.database",
+        "description": "app.database",
+        "isExtraImport": true,
+        "detail": "app.database",
+        "documentation": {}
+    },
+    {
+        "label": "get_db",
+        "kind": 2,
+        "importPath": "app.database",
+        "description": "app.database",
+        "peekOfCode": "def get_db():\n    db = SessionLocal()\n    try:\n        yield db\n    finally:\n        db.close()",
         "detail": "app.database",
         "documentation": {}
     },
@@ -217,7 +241,7 @@
         "kind": 5,
         "importPath": "app.database",
         "description": "app.database",
-        "peekOfCode": "SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)\n# The 'declarative_base' function creates a base class for our models.\n# This base class will contain metadata about our tables and columns and provide the ability to generate SQL queries.\n# All the ORM classes/models we define will inherit from this base class, ensuring they are mapped to the right tables.\nBase = declarative_base()",
+        "peekOfCode": "SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)\n# The 'declarative_base' function creates a base class for our models.\n# This base class will contain metadata about our tables and columns and provide the ability to generate SQL queries.\n# All the ORM classes/models we define will inherit from this base class, ensuring they are mapped to the right tables.\nBase = declarative_base()\n# Dependency\ndef get_db():\n    db = SessionLocal()\n    try:\n        yield db",
         "detail": "app.database",
         "documentation": {}
     },
@@ -226,7 +250,7 @@
         "kind": 5,
         "importPath": "app.database",
         "description": "app.database",
-        "peekOfCode": "Base = declarative_base()",
+        "peekOfCode": "Base = declarative_base()\n# Dependency\ndef get_db():\n    db = SessionLocal()\n    try:\n        yield db\n    finally:\n        db.close()",
         "detail": "app.database",
         "documentation": {}
     },
@@ -236,15 +260,6 @@
         "importPath": "app.main",
         "description": "app.main",
         "peekOfCode": "class Post(BaseModel):\n    title: str\n    content: str\n    published: bool = True\n    rating: Optional[int]= None\n# with psycopg.connect(host=\"localhost\",dbname=\"postgres\", user=\"postgres\", password=\"password\") as conn:\n#     with conn.cursor(row_factory=psycopg.AsyncCursor) as curr:\n#         print(\"Database connection was successful\")\nwhile True:\n    try:",
-        "detail": "app.main",
-        "documentation": {}
-    },
-    {
-        "label": "get_db",
-        "kind": 2,
-        "importPath": "app.main",
-        "description": "app.main",
-        "peekOfCode": "def get_db():\n    db = SessionLocal()\n    try:\n        yield db\n    finally:\n        db.close()\nclass Post(BaseModel):\n    title: str\n    content: str\n    published: bool = True",
         "detail": "app.main",
         "documentation": {}
     },
@@ -262,7 +277,7 @@
         "kind": 2,
         "importPath": "app.main",
         "description": "app.main",
-        "peekOfCode": "def find_post_index(id: int)->int:\n    \"\"\"\n    Returns the index of the post with given index\"\"\"\n    for i in range(len(my_posts)):\n        if my_posts[i]['id']==id:\n            return i\n@app.get(\"/\")\nasync def root():\n    return {\"message\": \"Hello world\"}\n#If we go to the http://127.0.0.1:8000/posts we will see the json output",
+        "peekOfCode": "def find_post_index(id: int)->int:\n    \"\"\"\n    Returns the index of the post with given index\"\"\"\n    for i in range(len(my_posts)):\n        if my_posts[i]['id']==id:\n            return i\n@app.get('/sql')\nasync def test_orm(db: Session = Depends(get_db)):\n    return {\"status\": \"success\"}\n@app.get(\"/\")",
         "detail": "app.main",
         "documentation": {}
     },
@@ -325,7 +340,7 @@
         "kind": 5,
         "importPath": "app.main",
         "description": "app.main",
-        "peekOfCode": "app = FastAPI()\nmodels.Base.metadata.create_all(bind= engine)\n# Dependency\ndef get_db():\n    db = SessionLocal()\n    try:\n        yield db\n    finally:\n        db.close()\nclass Post(BaseModel):",
+        "peekOfCode": "app = FastAPI()\nmodels.Base.metadata.create_all(bind= engine)\nclass Post(BaseModel):\n    title: str\n    content: str\n    published: bool = True\n    rating: Optional[int]= None\n# with psycopg.connect(host=\"localhost\",dbname=\"postgres\", user=\"postgres\", password=\"password\") as conn:\n#     with conn.cursor(row_factory=psycopg.AsyncCursor) as curr:\n#         print(\"Database connection was successful\")",
         "detail": "app.main",
         "documentation": {}
     },

@@ -11,7 +11,7 @@ from psycopg2.extras import RealDictCursor
 from sqlalchemy.orm import Session
 
 from app import models
-from app.database import SessionLocal, engine, get_db
+from app.database import engine, get_db
 
 app = FastAPI()
 

@@ -186,14 +186,6 @@
         "documentation": {}
     },
     {
-        "label": "SessionLocal",
-        "importPath": "app.database",
-        "description": "app.database",
-        "isExtraImport": true,
-        "detail": "app.database",
-        "documentation": {}
-    },
-    {
         "label": "engine",
         "importPath": "app.database",
         "description": "app.database",
@@ -358,7 +350,7 @@
         "kind": 6,
         "importPath": "app.models",
         "description": "app.models",
-        "peekOfCode": "class Post(Base):\n    #what do we wanna call this table in postgres? We have a class name called Post that only python knows but we can specify a specific name in postgres\n    __tablename__ = \"posts\"\n    #to create a column we have to import Column from SQLAlchemy\n    id = Column(Integer, primary_key=True, nullable=False)\n    title = Column(String, nullable=False)\n    content = Column(String, nullable=False)\n    published = Column(Boolean, default=True)\n#Now we will create the models in our mainfile",
+        "peekOfCode": "class Post(Base):\n    #what do we wanna call this table in postgres? We have a class name called Post that only python knows but we can specify a specific name in postgres\n    __tablename__ = \"posts\"\n    #to create a column we have to import Column from SQLAlchemy\n    id = Column(Integer, primary_key=True, nullable=False)\n    title = Column(String, nullable=False)\n    content = Column(String, nullable=False)\n    published = Column(Boolean, server_default='TRUE')\n#Now we will create the models in our mainfile",
         "detail": "app.models",
         "documentation": {}
     }

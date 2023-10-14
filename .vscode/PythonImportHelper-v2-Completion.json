@@ -8,6 +8,14 @@
         "documentation": {}
     },
     {
+        "label": "TIMESTAMP",
+        "importPath": "sqlalchemy",
+        "description": "sqlalchemy",
+        "isExtraImport": true,
+        "detail": "sqlalchemy",
+        "documentation": {}
+    },
+    {
         "label": "Boolean",
         "importPath": "sqlalchemy",
         "description": "sqlalchemy",
@@ -33,6 +41,14 @@
     },
     {
         "label": "String",
+        "importPath": "sqlalchemy",
+        "description": "sqlalchemy",
+        "isExtraImport": true,
+        "detail": "sqlalchemy",
+        "documentation": {}
+    },
+    {
+        "label": "text",
         "importPath": "sqlalchemy",
         "description": "sqlalchemy",
         "isExtraImport": true,
@@ -269,7 +285,7 @@
         "kind": 2,
         "importPath": "app.main",
         "description": "app.main",
-        "peekOfCode": "def find_post_index(id: int)->int:\n    \"\"\"\n    Returns the index of the post with given index\"\"\"\n    for i in range(len(my_posts)):\n        if my_posts[i]['id']==id:\n            return i\n@app.get('/sql')\nasync def test_orm(db: Session = Depends(get_db)):\n    return {\"status\": \"success\"}\n@app.get(\"/\")",
+        "peekOfCode": "def find_post_index(id: int)->int:\n    \"\"\"\n    Returns the index of the post with given index\"\"\"\n    for i in range(len(my_posts)):\n        if my_posts[i]['id']==id:\n            return i\n#TEST ONE: db.query(models.Post).all() ->\n# Tapping into database object and query the Post table and get all posts\n#returns the SQL query db.query(models.Post)\n@app.get('/sql')",
         "detail": "app.main",
         "documentation": {}
     },
@@ -278,7 +294,7 @@
         "kind": 2,
         "importPath": "app.main",
         "description": "app.main",
-        "peekOfCode": "def get_posts():\n    cursor.execute(\"\"\"SELECT * from posts\"\"\")\n    posts=cursor.fetchall()\n    return {\"data\":posts}\n    # Fast api will auto serialize my_posts into JSON\n@app.post(\"/post\",status_code=status.HTTP_201_CREATED)  \ndef create_posts(post: Post):\n    cursor.execute(\"\"\"INSERT INTO posts (title, content, published)\n                   VALUES (%s, %s, %s) RETURNING * \"\"\", (post.title, post.content, post.published))\n    new_post = cursor.fetchone()",
+        "peekOfCode": "def get_posts(db: Session = Depends(get_db)):\n    # cursor.execute(\"\"\"SELECT * from posts\"\"\")\n    # posts=cursor.fetchall()\n    posts= db.query(models.Post).all()\n    return {\"data\":posts}\n    # Fast api will auto serialize my_posts into JSON\n@app.post(\"/post\",status_code=status.HTTP_201_CREATED)  \ndef create_posts(post: Post, db: Session = Depends(get_db)):\n    # cursor.execute(\"\"\"INSERT INTO posts (title, content, published)\n    #                VALUES (%s, %s, %s) RETURNING * \"\"\", (post.title, post.content, post.published))",
         "detail": "app.main",
         "documentation": {}
     },
@@ -287,7 +303,7 @@
         "kind": 2,
         "importPath": "app.main",
         "description": "app.main",
-        "peekOfCode": "def create_posts(post: Post):\n    cursor.execute(\"\"\"INSERT INTO posts (title, content, published)\n                   VALUES (%s, %s, %s) RETURNING * \"\"\", (post.title, post.content, post.published))\n    new_post = cursor.fetchone()\n    conn.commit()\n    return {\"data\": new_post}\n@app.get(\"/posts/latest\")\ndef get_latest_post():\n    post = my_posts[len(my_posts)-1]\n    return {\"detail\": post}",
+        "peekOfCode": "def create_posts(post: Post, db: Session = Depends(get_db)):\n    # cursor.execute(\"\"\"INSERT INTO posts (title, content, published)\n    #                VALUES (%s, %s, %s) RETURNING * \"\"\", (post.title, post.content, post.published))\n    # new_post = cursor.fetchone()\n    # conn.commit()\n    new_post=models.Post(title=post.title, content=post.content, published=post.published)\n    db.add(new_post) #add to database\n    db.commit()\n    db.refresh(new_post) # When you call db.refresh(new_post),\n    #SQLAlchemy issues a SELECT statement to re-query the current state of the new_post ",
         "detail": "app.main",
         "documentation": {}
     },
@@ -296,7 +312,7 @@
         "kind": 2,
         "importPath": "app.main",
         "description": "app.main",
-        "peekOfCode": "def get_latest_post():\n    post = my_posts[len(my_posts)-1]\n    return {\"detail\": post}\n@app.get(\"/posts/{id}\")\ndef get_post(id:int, response: Response):\n    cursor.execute(\"\"\"SELECT * FROM posts where id = %s\"\"\",(str(id)))\n    post=cursor.fetchone()\n    conn.commit()\n    return {\"post_detail\": post}\n@app.delete(\"/posts/{id}\", status_code=status.HTTP_204_NO_CONTENT)",
+        "peekOfCode": "def get_latest_post(db: Session = Depends(get_db)):\n    post = my_posts[len(my_posts)-1]\n    return {\"detail\": post}\n@app.get(\"/posts/{id}\")\ndef get_post(id:int, response: Response):\n    cursor.execute(\"\"\"SELECT * FROM posts where id = %s\"\"\",(str(id)))\n    post=cursor.fetchone()\n    conn.commit()\n    return {\"post_detail\": post}\n@app.delete(\"/posts/{id}\", status_code=status.HTTP_204_NO_CONTENT)",
         "detail": "app.main",
         "documentation": {}
     },
@@ -350,7 +366,7 @@
         "kind": 6,
         "importPath": "app.models",
         "description": "app.models",
-        "peekOfCode": "class Post(Base):\n    #what do we wanna call this table in postgres? We have a class name called Post that only python knows but we can specify a specific name in postgres\n    __tablename__ = \"posts\"\n    #to create a column we have to import Column from SQLAlchemy\n    id = Column(Integer, primary_key=True, nullable=False)\n    title = Column(String, nullable=False)\n    content = Column(String, nullable=False)\n    published = Column(Boolean, server_default='TRUE')\n#Now we will create the models in our mainfile",
+        "peekOfCode": "class Post(Base):\n    #what do we wanna call this table in postgres? We have a class name called Post that only python knows but we can specify a specific name in postgres\n    __tablename__ = \"posts\"\n    #to create a column we have to import Column from SQLAlchemy\n    id = Column(Integer, primary_key=True, nullable=False)\n    title = Column(String, nullable=False)\n    content = Column(String, nullable=False)\n    published = Column(Boolean, server_default='TRUE')\n    created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text('now()'))",
         "detail": "app.models",
         "documentation": {}
     }

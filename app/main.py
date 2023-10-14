@@ -60,9 +60,13 @@ def find_post_index(id: int)->int:
         
 
 
+#TEST ONE: db.query(models.Post).all() ->
+# Tapping into database object and query the Post table and get all posts
+#returns the SQL query db.query(models.Post)
 @app.get('/sql')
 async def test_orm(db: Session = Depends(get_db)):
-    return {"status": "success"}
+    posts= db.query(models.Post).all()
+    return {"data": posts}
 
 @app.get("/")
 async def root():
@@ -70,25 +74,42 @@ async def root():
 
 #If we go to the http://127.0.0.1:8000/posts we will see the json output
 @app.get("/posts")
-def get_posts():
-    cursor.execute("""SELECT * from posts""")
-    posts=cursor.fetchall()
+def get_posts(db: Session = Depends(get_db)):
+    # cursor.execute("""SELECT * from posts""")
+    # posts=cursor.fetchall()
+
+    posts= db.query(models.Post).all()
+
+
+
     return {"data":posts}
 
     # Fast api will auto serialize my_posts into JSON
     
 
 @app.post("/post",status_code=status.HTTP_201_CREATED)  
-def create_posts(post: Post):
-    cursor.execute("""INSERT INTO posts (title, content, published)
-                   VALUES (%s, %s, %s) RETURNING * """, (post.title, post.content, post.published))
-    new_post = cursor.fetchone()
+def create_posts(post: Post, db: Session = Depends(get_db)):
+    # cursor.execute("""INSERT INTO posts (title, content, published)
+    #                VALUES (%s, %s, %s) RETURNING * """, (post.title, post.content, post.published))
+    # new_post = cursor.fetchone()
 
-    conn.commit()
+    # conn.commit()
+
+    new_post=models.Post(title=post.title, content=post.content, published=post.published)
+
+    db.add(new_post) #add to database
+    db.commit()
+    db.refresh(new_post) # When you call db.refresh(new_post),
+    #SQLAlchemy issues a SELECT statement to re-query the current state of the new_post 
+    # #instance from the database, and then it updates the object's attributes with the fresh data.
+
+
+
+
     return {"data": new_post}
 
 @app.get("/posts/latest")
-def get_latest_post():
+def get_latest_post(db: Session = Depends(get_db)):
     post = my_posts[len(my_posts)-1]
     return {"detail": post}
 

@@ -193,6 +193,14 @@
         "documentation": {}
     },
     {
+        "label": "BaseModel",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
         "label": "psycopg2",
         "kind": 6,
         "isExtraImport": true,
@@ -211,6 +219,14 @@
     },
     {
         "label": "models",
+        "importPath": "app",
+        "description": "app",
+        "isExtraImport": true,
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "schemas",
         "importPath": "app",
         "description": "app",
         "isExtraImport": true,
@@ -279,15 +295,6 @@
         "documentation": {}
     },
     {
-        "label": "Post",
-        "kind": 6,
-        "importPath": "app.main",
-        "description": "app.main",
-        "peekOfCode": "class Post(BaseModel):\n    title: str\n    content: str\n    published: bool = True\n    # rating: Optional[int]= None\n# with psycopg.connect(host=\"localhost\",dbname=\"postgres\", user=\"postgres\", password=\"password\") as conn:\n#     with conn.cursor(row_factory=psycopg.AsyncCursor) as curr:\n#         print(\"Database connection was successful\")\nwhile True:\n    try:",
-        "detail": "app.main",
-        "documentation": {}
-    },
-    {
         "label": "find_post",
         "kind": 2,
         "importPath": "app.main",
@@ -301,7 +308,7 @@
         "kind": 2,
         "importPath": "app.main",
         "description": "app.main",
-        "peekOfCode": "def find_post_index(id: int)->int:\n    \"\"\"\n    Returns the index of the post with given index\"\"\"\n    for i in range(len(my_posts)):\n        if my_posts[i]['id']==id:\n            return i\n#TEST ONE: db.query(models.Post).all() ->\n# Tapping into database object and query the Post table and get all posts\n#returns the SQL query db.query(models.Post)\n@app.get('/sql')",
+        "peekOfCode": "def find_post_index(id: int)->int:\n    \"\"\"\n    Returns the index of the post with given index\"\"\"\n    for i in range(len(my_posts)):\n        if my_posts[i]['id']==id:\n            return i\n#TEST ONE: db.query(models.Post).all() ->\n# Tapping into database object and query the Post table and get all posts\n#returns the SQL query db.query(models.Post)\n@app.get(\"/\")",
         "detail": "app.main",
         "documentation": {}
     },
@@ -310,7 +317,7 @@
         "kind": 2,
         "importPath": "app.main",
         "description": "app.main",
-        "peekOfCode": "def get_posts(db: Session = Depends(get_db)):\n    # cursor.execute(\"\"\"SELECT * from posts\"\"\")\n    # posts=cursor.fetchall()\n    posts= db.query(models.Post).all()\n    return {\"data\":posts}\n    # Fast api will auto serialize my_posts into JSON\n@app.post(\"/post\",status_code=status.HTTP_201_CREATED)  \ndef create_posts(post: Post, db: Session = Depends(get_db)):\n    # cursor.execute(\"\"\"INSERT INTO posts (title, content, published)\n    #                VALUES (%s, %s, %s) RETURNING * \"\"\", (post.title, post.content, post.published))",
+        "peekOfCode": "def get_posts(db: Session = Depends(get_db)):\n    # cursor.execute(\"\"\"SELECT * from posts\"\"\")\n    # posts=cursor.fetchall()\n    posts= db.query(models.Post).all()\n    return posts\n    # Fast api will auto serialize my_posts into JSON\n@app.post(\"/post\",status_code=status.HTTP_201_CREATED)  \ndef create_posts(post: schemas.PostCreate, db: Session = Depends(get_db)):\n    # cursor.execute(\"\"\"INSERT INTO posts (title, content, published)\n    #                VALUES (%s, %s, %s) RETURNING * \"\"\", (post.title, post.content, post.published))",
         "detail": "app.main",
         "documentation": {}
     },
@@ -319,7 +326,7 @@
         "kind": 2,
         "importPath": "app.main",
         "description": "app.main",
-        "peekOfCode": "def create_posts(post: Post, db: Session = Depends(get_db)):\n    # cursor.execute(\"\"\"INSERT INTO posts (title, content, published)\n    #                VALUES (%s, %s, %s) RETURNING * \"\"\", (post.title, post.content, post.published))\n    # new_post = cursor.fetchone()\n    # conn.commit()\n    # new_post=models.Post(title=post.title, content=post.content, published=post.published)\n    new_post=models.Post(**post.model_dump()) #Same as above, we unpacked\n    db.add(new_post) #add to database\n    db.commit()\n    db.refresh(new_post) # When you call db.refresh(new_post),",
+        "peekOfCode": "def create_posts(post: schemas.PostCreate, db: Session = Depends(get_db)):\n    # cursor.execute(\"\"\"INSERT INTO posts (title, content, published)\n    #                VALUES (%s, %s, %s) RETURNING * \"\"\", (post.title, post.content, post.published))\n    # new_post = cursor.fetchone()\n    # conn.commit()\n    # new_post=models.Post(title=post.title, content=post.content, published=post.published)\n    new_post=models.Post(**post.model_dump()) #Same as above, we unpacked\n    db.add(new_post) #add to database\n    db.commit()\n    db.refresh(new_post) # When you call db.refresh(new_post),",
         "detail": "app.main",
         "documentation": {}
     },
@@ -337,7 +344,7 @@
         "kind": 2,
         "importPath": "app.main",
         "description": "app.main",
-        "peekOfCode": "def get_post(id:int, response: Response, db: Session = Depends(get_db)):\n    # cursor.execute(\"\"\"SELECT * FROM posts where id = %s\"\"\",(str(id)))\n    # post=cursor.fetchone()\n    # conn.commit()\n# filter is equivalent of where\n    post = db.query(models.Post).filter(models.Post.id==id).first()\n    if not post:\n        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,\n                            detail=f\"Post with id {id} was not found\")\n    return {\"post_detail\": post}",
+        "peekOfCode": "def get_post(id:int, response: Response, db: Session = Depends(get_db)):\n    # cursor.execute(\"\"\"SELECT * FROM posts where id = %s\"\"\",(str(id)))\n    # post=cursor.fetchone()\n    # conn.commit()\n# filter is equivalent of where\n    post = db.query(models.Post).filter(models.Post.id==id).first()\n    if not post:\n        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,\n                            detail=f\"Post with id {id} was not found\")\n    return post",
         "detail": "app.main",
         "documentation": {}
     },
@@ -355,7 +362,7 @@
         "kind": 2,
         "importPath": "app.main",
         "description": "app.main",
-        "peekOfCode": "def update_post(id: int, post: Post, db: Session = Depends(get_db)):\n    # cursor.execute(\"\"\"UPDATE posts SET title = %s, content =  %s, published = %s WHERE id = %s RETURNING *\"\"\", (post.title, post.content, post.published, (str(id))))\n    # updated_post=cursor.fetchone()\n    post_query= db.query(models.Post).filter(models.Post.id == id)\n    post_inst=post_query.first()\n    if post_inst==None:\n        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f\"post with id{id} does not exist\")\n    post_query.update({**post.model_dump()}, synchronize_session=False)\n    db.commit()\n    # conn.commit()",
+        "peekOfCode": "def update_post(id: int, post: schemas.PostCreate, db: Session = Depends(get_db)):\n    # cursor.execute(\"\"\"UPDATE posts SET title = %s, content =  %s, published = %s WHERE id = %s RETURNING *\"\"\", (post.title, post.content, post.published, (str(id))))\n    # updated_post=cursor.fetchone()\n    post_query= db.query(models.Post).filter(models.Post.id == id)\n    post_inst=post_query.first()\n    if post_inst==None:\n        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f\"post with id{id} does not exist\")\n    post_query.update({**post.model_dump()}, synchronize_session=False)\n    db.commit()\n    # conn.commit()",
         "detail": "app.main",
         "documentation": {}
     },
@@ -364,7 +371,7 @@
         "kind": 5,
         "importPath": "app.main",
         "description": "app.main",
-        "peekOfCode": "app = FastAPI()\nmodels.Base.metadata.create_all(bind= engine)\nclass Post(BaseModel):\n    title: str\n    content: str\n    published: bool = True\n    # rating: Optional[int]= None\n# with psycopg.connect(host=\"localhost\",dbname=\"postgres\", user=\"postgres\", password=\"password\") as conn:\n#     with conn.cursor(row_factory=psycopg.AsyncCursor) as curr:\n#         print(\"Database connection was successful\")",
+        "peekOfCode": "app = FastAPI()\nmodels.Base.metadata.create_all(bind= engine)\n# with psycopg.connect(host=\"localhost\",dbname=\"postgres\", user=\"postgres\", password=\"password\") as conn:\n#     with conn.cursor(row_factory=psycopg.AsyncCursor) as curr:\n#         print(\"Database connection was successful\")\nwhile True:\n    try:\n        conn = psycopg2.connect(host='localhost', dbname='postgres', user='postgres', password = 'password', cursor_factory=RealDictCursor)\n        cursor = conn.cursor()\n        print(\"Database connection successful\")",
         "detail": "app.main",
         "documentation": {}
     },
@@ -384,6 +391,24 @@
         "description": "app.models",
         "peekOfCode": "class Post(Base):\n    #what do we wanna call this table in postgres? We have a class name called Post that only python knows but we can specify a specific name in postgres\n    __tablename__ = \"posts\"\n    #to create a column we have to import Column from SQLAlchemy\n    id = Column(Integer, primary_key=True, nullable=False)\n    title = Column(String, nullable=False)\n    content = Column(String, nullable=False)\n    published = Column(Boolean, server_default='TRUE')\n    created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text('now()'))",
         "detail": "app.models",
+        "documentation": {}
+    },
+    {
+        "label": "PostBase",
+        "kind": 6,
+        "importPath": "app.schemas",
+        "description": "app.schemas",
+        "peekOfCode": "class PostBase(BaseModel):\n    title: str\n    content: str\n    published: bool = True\nclass PostCreate(PostBase):\n   pass",
+        "detail": "app.schemas",
+        "documentation": {}
+    },
+    {
+        "label": "PostCreate",
+        "kind": 6,
+        "importPath": "app.schemas",
+        "description": "app.schemas",
+        "peekOfCode": "class PostCreate(PostBase):\n   pass",
+        "detail": "app.schemas",
         "documentation": {}
     }
 ]

@@ -10,8 +10,7 @@ from pydantic import BaseModel
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from sqlalchemy.orm import Session
-
-from app import models
+from app import models, schemas
 from app.database import engine, get_db
 
 app = FastAPI()
@@ -22,11 +21,7 @@ models.Base.metadata.create_all(bind= engine)
 
 
 
-class Post(BaseModel):
-    title: str
-    content: str
-    published: bool = True
-    # rating: Optional[int]= None
+
 
 
 # with psycopg.connect(host="localhost",dbname="postgres", user="postgres", password="password") as conn:
@@ -64,10 +59,6 @@ def find_post_index(id: int)->int:
 #TEST ONE: db.query(models.Post).all() ->
 # Tapping into database object and query the Post table and get all posts
 #returns the SQL query db.query(models.Post)
-@app.get('/sql')
-async def test_orm(db: Session = Depends(get_db)):
-    posts= db.query(models.Post).all()
-    return {"data": posts}
 
 @app.get("/")
 async def root():
@@ -83,13 +74,13 @@ def get_posts(db: Session = Depends(get_db)):
 
 
 
-    return {"data":posts}
+    return posts
 
     # Fast api will auto serialize my_posts into JSON
     
 
 @app.post("/post",status_code=status.HTTP_201_CREATED)  
-def create_posts(post: Post, db: Session = Depends(get_db)):
+def create_posts(post: schemas.PostCreate, db: Session = Depends(get_db)):
     # cursor.execute("""INSERT INTO posts (title, content, published)
     #                VALUES (%s, %s, %s) RETURNING * """, (post.title, post.content, post.published))
     # new_post = cursor.fetchone()
@@ -105,7 +96,7 @@ def create_posts(post: Post, db: Session = Depends(get_db)):
     #SQLAlchemy issues a SELECT statement to re-query the current state of the new_post 
     # #instance from the database, and then it updates the object's attributes with the fresh data.
 
-    return {"data": new_post}
+    return new_post
 
 @app.get("/posts/latest")
 def get_latest_post(db: Session = Depends(get_db)):
@@ -126,7 +117,7 @@ def get_post(id:int, response: Response, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"Post with id {id} was not found")
 
-    return {"post_detail": post}
+    return post
 
 
 
@@ -155,7 +146,7 @@ def delete_post(id: int, db: Session = Depends(get_db)):
 
 
 @app.put("/posts/{id}")
-def update_post(id: int, post: Post, db: Session = Depends(get_db)):
+def update_post(id: int, post: schemas.PostCreate, db: Session = Depends(get_db)):
     # cursor.execute("""UPDATE posts SET title = %s, content =  %s, published = %s WHERE id = %s RETURNING *""", (post.title, post.content, post.published, (str(id))))
     # updated_post=cursor.fetchone()
 
@@ -172,6 +163,6 @@ def update_post(id: int, post: Post, db: Session = Depends(get_db)):
     
 
     # conn.commit()
-    return {'data': post_query.first()}
+    return post_query.first()
 
 

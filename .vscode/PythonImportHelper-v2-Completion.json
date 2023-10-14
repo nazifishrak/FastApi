@@ -105,6 +105,22 @@
         "documentation": {}
     },
     {
+        "label": "mode",
+        "importPath": "turtle",
+        "description": "turtle",
+        "isExtraImport": true,
+        "detail": "turtle",
+        "documentation": {}
+    },
+    {
+        "label": "pos",
+        "importPath": "turtle",
+        "description": "turtle",
+        "isExtraImport": true,
+        "detail": "turtle",
+        "documentation": {}
+    },
+    {
         "label": "Optional",
         "importPath": "typing",
         "description": "typing",
@@ -267,7 +283,7 @@
         "kind": 6,
         "importPath": "app.main",
         "description": "app.main",
-        "peekOfCode": "class Post(BaseModel):\n    title: str\n    content: str\n    published: bool = True\n    rating: Optional[int]= None\n# with psycopg.connect(host=\"localhost\",dbname=\"postgres\", user=\"postgres\", password=\"password\") as conn:\n#     with conn.cursor(row_factory=psycopg.AsyncCursor) as curr:\n#         print(\"Database connection was successful\")\nwhile True:\n    try:",
+        "peekOfCode": "class Post(BaseModel):\n    title: str\n    content: str\n    published: bool = True\n    # rating: Optional[int]= None\n# with psycopg.connect(host=\"localhost\",dbname=\"postgres\", user=\"postgres\", password=\"password\") as conn:\n#     with conn.cursor(row_factory=psycopg.AsyncCursor) as curr:\n#         print(\"Database connection was successful\")\nwhile True:\n    try:",
         "detail": "app.main",
         "documentation": {}
     },
@@ -303,7 +319,7 @@
         "kind": 2,
         "importPath": "app.main",
         "description": "app.main",
-        "peekOfCode": "def create_posts(post: Post, db: Session = Depends(get_db)):\n    # cursor.execute(\"\"\"INSERT INTO posts (title, content, published)\n    #                VALUES (%s, %s, %s) RETURNING * \"\"\", (post.title, post.content, post.published))\n    # new_post = cursor.fetchone()\n    # conn.commit()\n    new_post=models.Post(title=post.title, content=post.content, published=post.published)\n    db.add(new_post) #add to database\n    db.commit()\n    db.refresh(new_post) # When you call db.refresh(new_post),\n    #SQLAlchemy issues a SELECT statement to re-query the current state of the new_post ",
+        "peekOfCode": "def create_posts(post: Post, db: Session = Depends(get_db)):\n    # cursor.execute(\"\"\"INSERT INTO posts (title, content, published)\n    #                VALUES (%s, %s, %s) RETURNING * \"\"\", (post.title, post.content, post.published))\n    # new_post = cursor.fetchone()\n    # conn.commit()\n    # new_post=models.Post(title=post.title, content=post.content, published=post.published)\n    new_post=models.Post(**post.model_dump()) #Same as above, we unpacked\n    db.add(new_post) #add to database\n    db.commit()\n    db.refresh(new_post) # When you call db.refresh(new_post),",
         "detail": "app.main",
         "documentation": {}
     },
@@ -312,7 +328,7 @@
         "kind": 2,
         "importPath": "app.main",
         "description": "app.main",
-        "peekOfCode": "def get_latest_post(db: Session = Depends(get_db)):\n    post = my_posts[len(my_posts)-1]\n    return {\"detail\": post}\n@app.get(\"/posts/{id}\")\ndef get_post(id:int, response: Response):\n    cursor.execute(\"\"\"SELECT * FROM posts where id = %s\"\"\",(str(id)))\n    post=cursor.fetchone()\n    conn.commit()\n    return {\"post_detail\": post}\n@app.delete(\"/posts/{id}\", status_code=status.HTTP_204_NO_CONTENT)",
+        "peekOfCode": "def get_latest_post(db: Session = Depends(get_db)):\n    post = my_posts[len(my_posts)-1]\n    return {\"detail\": post}\n@app.get(\"/posts/{id}\")\ndef get_post(id:int, response: Response, db: Session = Depends(get_db)):\n    # cursor.execute(\"\"\"SELECT * FROM posts where id = %s\"\"\",(str(id)))\n    # post=cursor.fetchone()\n    # conn.commit()\n# filter is equivalent of where\n    post = db.query(models.Post).filter(models.Post.id==id).first()",
         "detail": "app.main",
         "documentation": {}
     },
@@ -321,7 +337,7 @@
         "kind": 2,
         "importPath": "app.main",
         "description": "app.main",
-        "peekOfCode": "def get_post(id:int, response: Response):\n    cursor.execute(\"\"\"SELECT * FROM posts where id = %s\"\"\",(str(id)))\n    post=cursor.fetchone()\n    conn.commit()\n    return {\"post_detail\": post}\n@app.delete(\"/posts/{id}\", status_code=status.HTTP_204_NO_CONTENT)\ndef delete_post(id: int):\n    \"\"\"delete the post\"\"\"\n    #find the index of the post in the array with the required ID\n    cursor.execute(\"\"\"DELETE FROM posts WHERE id = %s returning *\"\"\", (str(id)))",
+        "peekOfCode": "def get_post(id:int, response: Response, db: Session = Depends(get_db)):\n    # cursor.execute(\"\"\"SELECT * FROM posts where id = %s\"\"\",(str(id)))\n    # post=cursor.fetchone()\n    # conn.commit()\n# filter is equivalent of where\n    post = db.query(models.Post).filter(models.Post.id==id).first()\n    if not post:\n        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,\n                            detail=f\"Post with id {id} was not found\")\n    return {\"post_detail\": post}",
         "detail": "app.main",
         "documentation": {}
     },
@@ -330,7 +346,7 @@
         "kind": 2,
         "importPath": "app.main",
         "description": "app.main",
-        "peekOfCode": "def delete_post(id: int):\n    \"\"\"delete the post\"\"\"\n    #find the index of the post in the array with the required ID\n    cursor.execute(\"\"\"DELETE FROM posts WHERE id = %s returning *\"\"\", (str(id)))\n    deleted_post=cursor.fetchone()\n    conn.commit()\n    if deleted_post ==None:\n        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f\"post with id {id} does not exist\")\n    return Response(status_code= status.HTTP_204_NO_CONTENT)\n@app.put(\"/posts/{id}\")",
+        "peekOfCode": "def delete_post(id: int, db: Session = Depends(get_db)):\n    \"\"\"delete the post\"\"\"\n    #find the index of the post in the array with the required ID\n    # cursor.execute(\"\"\"DELETE FROM posts WHERE id = %s returning *\"\"\", (str(id)))\n    # deleted_post=cursor.fetchone()\n    # conn.commit()\n    post_query=db.query(models.Post).filter(models.Post.id == id)\n    if post_query.first() ==None:\n        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f\"post with id {id} does not exist\")\n    post_query.delete(synchronize_session=False)",
         "detail": "app.main",
         "documentation": {}
     },
@@ -339,7 +355,7 @@
         "kind": 2,
         "importPath": "app.main",
         "description": "app.main",
-        "peekOfCode": "def update_post(id: int, post: Post):\n    cursor.execute(\"\"\"UPDATE posts SET title = %s, content =  %s, published = %s WHERE id = %s RETURNING *\"\"\", (post.title, post.content, post.published, (str(id))))\n    updated_post=cursor.fetchone()\n    if updated_post==None:\n        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f\"post with id{id} does not exist\")\n    conn.commit()\n    return {'data': updated_post}",
+        "peekOfCode": "def update_post(id: int, post: Post, db: Session = Depends(get_db)):\n    # cursor.execute(\"\"\"UPDATE posts SET title = %s, content =  %s, published = %s WHERE id = %s RETURNING *\"\"\", (post.title, post.content, post.published, (str(id))))\n    # updated_post=cursor.fetchone()\n    post_query= db.query(models.Post).filter(models.Post.id == id)\n    post_inst=post_query.first()\n    if post_inst==None:\n        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f\"post with id{id} does not exist\")\n    post_query.update({**post.model_dump()}, synchronize_session=False)\n    db.commit()\n    # conn.commit()",
         "detail": "app.main",
         "documentation": {}
     },
@@ -348,7 +364,7 @@
         "kind": 5,
         "importPath": "app.main",
         "description": "app.main",
-        "peekOfCode": "app = FastAPI()\nmodels.Base.metadata.create_all(bind= engine)\nclass Post(BaseModel):\n    title: str\n    content: str\n    published: bool = True\n    rating: Optional[int]= None\n# with psycopg.connect(host=\"localhost\",dbname=\"postgres\", user=\"postgres\", password=\"password\") as conn:\n#     with conn.cursor(row_factory=psycopg.AsyncCursor) as curr:\n#         print(\"Database connection was successful\")",
+        "peekOfCode": "app = FastAPI()\nmodels.Base.metadata.create_all(bind= engine)\nclass Post(BaseModel):\n    title: str\n    content: str\n    published: bool = True\n    # rating: Optional[int]= None\n# with psycopg.connect(host=\"localhost\",dbname=\"postgres\", user=\"postgres\", password=\"password\") as conn:\n#     with conn.cursor(row_factory=psycopg.AsyncCursor) as curr:\n#         print(\"Database connection was successful\")",
         "detail": "app.main",
         "documentation": {}
     },

@@ -3,7 +3,7 @@ from email.policy import HTTP
 from random import randrange
 import time
 from turtle import mode, pos
-from typing import Optional, Tuple
+from typing import Optional, Tuple, List
 from fastapi import FastAPI, Response, status, HTTPException, Depends
 from fastapi import Body
 from pydantic import BaseModel
@@ -12,6 +12,7 @@ from psycopg2.extras import RealDictCursor
 from sqlalchemy.orm import Session
 from app import models, schemas
 from app.database import engine, get_db
+from app.models import Post
 
 app = FastAPI()
 
@@ -65,7 +66,7 @@ async def root():
     return {"message": "Hello world"} 
 
 #If we go to the http://127.0.0.1:8000/posts we will see the json output
-@app.get("/posts")
+@app.get("/posts",response_model=List[schemas.PostResponse])
 def get_posts(db: Session = Depends(get_db)):
     # cursor.execute("""SELECT * from posts""")
     # posts=cursor.fetchall()
@@ -79,7 +80,7 @@ def get_posts(db: Session = Depends(get_db)):
     # Fast api will auto serialize my_posts into JSON
     
 
-@app.post("/post",status_code=status.HTTP_201_CREATED)  
+@app.post("/post",status_code=status.HTTP_201_CREATED, response_model=schemas.PostResponse)  
 def create_posts(post: schemas.PostCreate, db: Session = Depends(get_db)):
     # cursor.execute("""INSERT INTO posts (title, content, published)
     #                VALUES (%s, %s, %s) RETURNING * """, (post.title, post.content, post.published))
@@ -98,14 +99,14 @@ def create_posts(post: schemas.PostCreate, db: Session = Depends(get_db)):
 
     return new_post
 
-@app.get("/posts/latest")
+@app.get("/posts/latest",response_model=schemas.PostResponse)
 def get_latest_post(db: Session = Depends(get_db)):
     post = my_posts[len(my_posts)-1]
     return {"detail": post}
 
 
 
-@app.get("/posts/{id}")
+@app.get("/posts/{id}", response_model=schemas.PostResponse)
 def get_post(id:int, response: Response, db: Session = Depends(get_db)):
     # cursor.execute("""SELECT * FROM posts where id = %s""",(str(id)))
     # post=cursor.fetchone()
@@ -142,6 +143,12 @@ def delete_post(id: int, db: Session = Depends(get_db)):
     db.commit()
     return Response(status_code= status.HTTP_204_NO_CONTENT)
 
+@app.delete("/all",status_code=status.HTTP_204_NO_CONTENT)
+def delete_all(db : Session= Depends(get_db)):
+    post_query = db.query(models.Post)
+    post_query.delete(synchronize_session=False)
+    db.commit()
+    return Response(status_code= status.HTTP_204_NO_CONTENT)
 
 
 

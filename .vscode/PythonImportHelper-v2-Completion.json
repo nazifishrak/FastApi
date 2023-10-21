@@ -137,6 +137,14 @@
         "documentation": {}
     },
     {
+        "label": "List",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
         "label": "FastAPI",
         "importPath": "fastapi",
         "description": "fastapi",
@@ -250,6 +258,22 @@
         "documentation": {}
     },
     {
+        "label": "Post",
+        "importPath": "app.models",
+        "description": "app.models",
+        "isExtraImport": true,
+        "detail": "app.models",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
         "label": "get_db",
         "kind": 2,
         "importPath": "app.database",
@@ -317,7 +341,7 @@
         "kind": 2,
         "importPath": "app.main",
         "description": "app.main",
-        "peekOfCode": "def get_posts(db: Session = Depends(get_db)):\n    # cursor.execute(\"\"\"SELECT * from posts\"\"\")\n    # posts=cursor.fetchall()\n    posts= db.query(models.Post).all()\n    return posts\n    # Fast api will auto serialize my_posts into JSON\n@app.post(\"/post\",status_code=status.HTTP_201_CREATED)  \ndef create_posts(post: schemas.PostCreate, db: Session = Depends(get_db)):\n    # cursor.execute(\"\"\"INSERT INTO posts (title, content, published)\n    #                VALUES (%s, %s, %s) RETURNING * \"\"\", (post.title, post.content, post.published))",
+        "peekOfCode": "def get_posts(db: Session = Depends(get_db)):\n    # cursor.execute(\"\"\"SELECT * from posts\"\"\")\n    # posts=cursor.fetchall()\n    posts= db.query(models.Post).all()\n    return posts\n    # Fast api will auto serialize my_posts into JSON\n@app.post(\"/post\",status_code=status.HTTP_201_CREATED, response_model=schemas.PostResponse)  \ndef create_posts(post: schemas.PostCreate, db: Session = Depends(get_db)):\n    # cursor.execute(\"\"\"INSERT INTO posts (title, content, published)\n    #                VALUES (%s, %s, %s) RETURNING * \"\"\", (post.title, post.content, post.published))",
         "detail": "app.main",
         "documentation": {}
     },
@@ -335,7 +359,7 @@
         "kind": 2,
         "importPath": "app.main",
         "description": "app.main",
-        "peekOfCode": "def get_latest_post(db: Session = Depends(get_db)):\n    post = my_posts[len(my_posts)-1]\n    return {\"detail\": post}\n@app.get(\"/posts/{id}\")\ndef get_post(id:int, response: Response, db: Session = Depends(get_db)):\n    # cursor.execute(\"\"\"SELECT * FROM posts where id = %s\"\"\",(str(id)))\n    # post=cursor.fetchone()\n    # conn.commit()\n# filter is equivalent of where\n    post = db.query(models.Post).filter(models.Post.id==id).first()",
+        "peekOfCode": "def get_latest_post(db: Session = Depends(get_db)):\n    post = my_posts[len(my_posts)-1]\n    return {\"detail\": post}\n@app.get(\"/posts/{id}\", response_model=schemas.PostResponse)\ndef get_post(id:int, response: Response, db: Session = Depends(get_db)):\n    # cursor.execute(\"\"\"SELECT * FROM posts where id = %s\"\"\",(str(id)))\n    # post=cursor.fetchone()\n    # conn.commit()\n# filter is equivalent of where\n    post = db.query(models.Post).filter(models.Post.id==id).first()",
         "detail": "app.main",
         "documentation": {}
     },
@@ -354,6 +378,15 @@
         "importPath": "app.main",
         "description": "app.main",
         "peekOfCode": "def delete_post(id: int, db: Session = Depends(get_db)):\n    \"\"\"delete the post\"\"\"\n    #find the index of the post in the array with the required ID\n    # cursor.execute(\"\"\"DELETE FROM posts WHERE id = %s returning *\"\"\", (str(id)))\n    # deleted_post=cursor.fetchone()\n    # conn.commit()\n    post_query=db.query(models.Post).filter(models.Post.id == id)\n    if post_query.first() ==None:\n        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f\"post with id {id} does not exist\")\n    post_query.delete(synchronize_session=False)",
+        "detail": "app.main",
+        "documentation": {}
+    },
+    {
+        "label": "delete_all",
+        "kind": 2,
+        "importPath": "app.main",
+        "description": "app.main",
+        "peekOfCode": "def delete_all(db : Session= Depends(get_db)):\n    post_query = db.query(models.Post)\n    post_query.delete(synchronize_session=False)\n    db.commit()\n    return Response(status_code= status.HTTP_204_NO_CONTENT)\n@app.put(\"/posts/{id}\")\ndef update_post(id: int, post: schemas.PostCreate, db: Session = Depends(get_db)):\n    # cursor.execute(\"\"\"UPDATE posts SET title = %s, content =  %s, published = %s WHERE id = %s RETURNING *\"\"\", (post.title, post.content, post.published, (str(id))))\n    # updated_post=cursor.fetchone()\n    post_query= db.query(models.Post).filter(models.Post.id == id)",
         "detail": "app.main",
         "documentation": {}
     },
@@ -398,7 +431,7 @@
         "kind": 6,
         "importPath": "app.schemas",
         "description": "app.schemas",
-        "peekOfCode": "class PostBase(BaseModel):\n    title: str\n    content: str\n    published: bool = True\nclass PostCreate(PostBase):\n   pass",
+        "peekOfCode": "class PostBase(BaseModel):\n    title: str\n    content: str\n    published: bool = True\nclass PostCreate(PostBase):\n   pass\nclass PostResponse(PostBase):\n    id: int\n    created_at: datetime\n    class Config:",
         "detail": "app.schemas",
         "documentation": {}
     },
@@ -407,7 +440,16 @@
         "kind": 6,
         "importPath": "app.schemas",
         "description": "app.schemas",
-        "peekOfCode": "class PostCreate(PostBase):\n   pass",
+        "peekOfCode": "class PostCreate(PostBase):\n   pass\nclass PostResponse(PostBase):\n    id: int\n    created_at: datetime\n    class Config:\n        from_attributes = True",
+        "detail": "app.schemas",
+        "documentation": {}
+    },
+    {
+        "label": "PostResponse",
+        "kind": 6,
+        "importPath": "app.schemas",
+        "description": "app.schemas",
+        "peekOfCode": "class PostResponse(PostBase):\n    id: int\n    created_at: datetime\n    class Config:\n        from_attributes = True",
         "detail": "app.schemas",
         "documentation": {}
     }

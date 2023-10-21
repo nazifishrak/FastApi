@@ -1,5 +1,6 @@
 
 
+from datetime import datetime
 from pydantic import BaseModel
 
 
@@ -10,7 +11,16 @@ class PostBase(BaseModel):
     content: str
     published: bool = True
 
+
 class PostCreate(PostBase):
    pass
+
+
+class PostResponse(PostBase):
+    id: int
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
 
 
